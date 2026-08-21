@@ -23,6 +23,7 @@ estacionamento/
 ├── modelo/
 │   ├── cliente.js           # Definição das classes Cliente, Professor, Estudante, Empresa e Avulso
 │   └── estacionamento.js    # Definição das classes Veiculo, RegistroEstacionamento e Estacionamento
+│   └── desconto.js          # Definição das classes desconto e clienteFrequente
 ├── app.js                   # Script principal com a demonstração e testes do sistema
-├── Diagrama_de_Classes.pdf  # Diagrama UML de classes (Figura 1)
+├── Diagrama_de_Classe.png   #imagem contendo diagrama de classes
 └── README.md                # Documentação do projeto
