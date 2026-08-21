@@ -1,11 +1,15 @@
+// Importando a classe ClienteAvulso do módulo cliente.js
+
 import { ClienteAvulso } from './cliente.js';
 
+//classe Veiculo, que representa um veículo com uma placa
 class Veiculo {
     constructor(placa) {
         this.placa = placa;
     }
 }
 
+//classe RegistroEstacionamento, que representa o registro de entrada e saída de um veículo no estacionamento
 class RegistroEstacionamento {
     constructor(placa, cliente, entrada) {
         this.placa = placa;
@@ -24,6 +28,7 @@ class RegistroEstacionamento {
     }
 }
 
+//classe Estacionamento, que gerencia a entrada e saída de veículos, clientes e registros
 class Estacionamento {
     constructor() {
         this.capacidade = 9000;
@@ -36,14 +41,14 @@ class Estacionamento {
         this.clientes.set(cliente.id, cliente);
     }
 
-    // Busca qual cliente cadastrado é dono da placa informada
+    // Método para buscar um cliente pelo identificador (CPF, CNPJ ou placa)
     buscarClientePorPlaca(placa) {
         for (const cliente of this.clientes.values()) {
             if (cliente.possuiPlaca(placa)) {
                 return cliente;
             }
         }
-        return null; // Não encontrou pré-cadastro
+        return null; // Se não encontrar nenhum cliente com a placa fornecida
     }
 
     entrada(placa, clienteManual = null) {
@@ -52,25 +57,25 @@ class Estacionamento {
             throw new Error("Estacionamento lotado!");
         }
 
-        // 2. Validação se o veículo já está dentro do estacionamento
+        // 2. Validação de veículo já presente
         if (this.veiculosAtivos.has(placa)) {
             throw new Error(`O veículo de placa ${placa} já está no estacionamento.`);
         }
 
-        // 3. Validação de placa bloqueada
+        // 3. Validação de bloqueio
         if (this.veiculosBloqueados.has(placa)) {
             throw new Error(`Veículo ${placa} está bloqueado de entrar.`);
         }
 
-        // 4. Identificação do cliente (busca automática por placa se não for passado explicitamente)
+        // 4. Determinação do cliente
         let cliente = clienteManual || this.buscarClientePorPlaca(placa);
 
-        // Se não possui cadastro prévio, vira Cliente Avulso
+        // Se não encontrar um cliente, cria um ClienteAvulso
         if (!cliente) {
             cliente = new ClienteAvulso(placa);
         }
 
-        // 5. Validação de Inadimplência
+        // 5. Validação de inadimplência
         if (cliente.inadimplente) {
             throw new Error(`Entrada recusada: O cliente ${cliente.nome} possui pendências financeiras.`);
         }
@@ -94,21 +99,23 @@ class Estacionamento {
 
         const dataSaida = new Date();
 
-        // Cálculo da permanência em horas (mínimo de 1 hora, arredondando para cima)
+        // Calcula a diferença em milissegundos e converte para horas, arredondando para cima
         const diferencaMs = dataSaida.getTime() - registro.entrada.getTime();
         const horasPermanencia = Math.max(1, Math.ceil(diferencaMs / (1000 * 60 * 60)));
 
-        // Passa o tempo calculado para o método de cobrança do cliente
+        // Calcula o valor da cobrança com base no tipo de cliente
         const valor = registro.cliente.calcularCobranca(horasPermanencia);
 
         registro.encerrar(dataSaida, valor);
 
-        // Remove dos veículos ativos
+        // Remove o veículo da lista de ativos
         this.veiculosAtivos.delete(placa);
 
         return registro;
     }
 }
+
+// Exportando as classes para uso em outros módulos
 
 export {
     Veiculo,

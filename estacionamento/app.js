@@ -1,3 +1,5 @@
+// Importações de módulos
+
 import {
     Cliente,
     ClienteAvulso,
@@ -17,6 +19,8 @@ import {
     ClienteFrequente
 } from "./modelo/desconto.js";
 
+//demonstrando o funcionamento do sistema de estacionamento
+
 console.log("==================================================");
 console.log(" 🚗 SISTEMA DE ESTACIONAMENTO EstACME - FASE 1 🏢");
 console.log("==================================================\n");
@@ -31,7 +35,7 @@ console.log(" 1.Cadastrando Clientes e Veículos...");
 const prof = new Professor("12345678901", "Prof. Carlos");
 prof.adicionarPlaca("ABC1D23");
 
-const aluno = new Estudante("98765432100", "João Silva", 25.00); // Saldo de R$ 25
+const aluno = new Estudante("98765432100", "João Silva", 25.00); // saldo inicial de R$ 25,00
 aluno.adicionarPlaca("DEF2E34");
 
 const empresa = new Empresa("12345678000199", "Empresa Tech");
@@ -60,17 +64,17 @@ console.log(`✅ Veículos ativos no momento: ${estacionamento.veiculosAtivos.si
 // -----------------------------------------------------------------
 console.log(" 3.Testando Validações e Regras de Segurança:");
 
-// Tentativa A: Entrar com o mesmo carro duas vezes
+// Tentativa A: Entrada de veículo duplicado
 try {
     estacionamento.entrada("ABC1D23");
 } catch (erro) {
     console.log(`⚠️ Validação OK (Veículo Duplicado): ${erro.message}`);
 }
 
-// Tentativa B: Professor cadastrar mais de 2 placas
+// Tentativa B: Entrada de veículo bloqueado
 try {
     prof.adicionarPlaca("AAA1111");
-    prof.adicionarPlaca("BBB2222"); // 3ª placa -> Deve falhar
+    prof.adicionarPlaca("BBB2222"); // Adicionando duas placas para bloquear o professor
 } catch (erro) {
     console.log(`⚠️ Validação OK (Limite do Professor): ${erro.message}`);
 }

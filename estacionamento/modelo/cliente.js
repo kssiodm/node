@@ -1,3 +1,5 @@
+//classe base para todos os tipos de clientes
+
 class Cliente {
     constructor(id, nome) {
         this.id = id;
@@ -23,10 +25,12 @@ class Cliente {
     }
 }
 
+// Subclasses para tipos específicos de clientes
+//classe cliente avulso, que paga por hora ou diária
 class ClienteAvulso extends Cliente {
     constructor(placa) {
         super(placa, "Cliente Avulso");
-        this.adicionarPlaca(placa); // Adiciona a própria placa ao Set
+        this.adicionarPlaca(placa); // Adiciona a própria placa como identificador
         this.bloqueado = false;
     }
 
@@ -42,6 +46,7 @@ class ClienteAvulso extends Cliente {
     }
 }
 
+//classe professor, que pode cadastrar até dois veículos e não paga estacionamento
 class Professor extends Cliente {
     constructor(cpf, nome) {
         super(cpf, nome);
@@ -59,6 +64,7 @@ class Professor extends Cliente {
     }
 }
 
+//classe estudante, que pode cadastrar apenas um veículo e paga uma taxa fixa de R$ 10,00 por entrada
 class Estudante extends Cliente {
     constructor(cpf, nome, saldo = 0) {
         super(cpf, nome);
@@ -88,6 +94,7 @@ class Estudante extends Cliente {
     }
 }
 
+//classe empresa, que pode cadastrar até cinco veículos e paga uma taxa fixa de R$ 20,00 por entrada
 class Empresa extends Cliente {
     constructor(cnpj, nome) {
         super(cnpj, nome);
@@ -105,6 +112,8 @@ class Empresa extends Cliente {
         return this.debito;
     }
 }
+
+// Exportando as classes para uso em outros módulos
 
 export {
     Cliente,
