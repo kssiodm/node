@@ -1,5 +1,3 @@
-//classe base para todos os tipos de clientes
-
 class Cliente {
     constructor(id, nome) {
         this.id = id;
@@ -19,34 +17,30 @@ class Cliente {
         return this.placas.has(placa);
     }
 
-    // Agora aceita horas
     calcularCobranca(horas) {
-        throw new Error("Método abstrato.");
+        throw new Error("Método abstrato deve ser implementado nas subclasses.");
     }
 }
 
-// Subclasses para tipos específicos de clientes
-//classe cliente avulso, que paga por hora ou diária
 class ClienteAvulso extends Cliente {
     constructor(placa) {
         super(placa, "Cliente Avulso");
-        this.adicionarPlaca(placa); // Adiciona a própria placa como identificador
+        this.adicionarPlaca(placa);
         this.bloqueado = false;
     }
 
     calcularCobranca(horas = 1) {
-        const VALOR_HORA = 5;
-        const DIARIA = 20;
+        const VALOR_HORA = 5.00;
+        const VALOR_DIARIA = 20.00;
 
-        if (horas > 6) {
-            return DIARIA;
+        // Se passar de 4 horas, cobra o valor fixo da diária
+        if (horas >= 4) {
+            return VALOR_DIARIA;
         }
-
         return horas * VALOR_HORA;
     }
 }
 
-//classe professor, que pode cadastrar até dois veículos e não paga estacionamento
 class Professor extends Cliente {
     constructor(cpf, nome) {
         super(cpf, nome);
@@ -54,17 +48,16 @@ class Professor extends Cliente {
 
     adicionarPlaca(placa) {
         if (this.placas.size >= 2) {
-            throw new Error("Um professor pode cadastrar apenas dois veículos.");
+            throw new Error("Professores podem cadastrar no máximo 2 veículos.");
         }
         super.adicionarPlaca(placa);
     }
 
     calcularCobranca(horas) {
-        return 0; // Professores são isentos
+        return 0.00; // Isento conforme regra de negócio
     }
 }
 
-//classe estudante, que pode cadastrar apenas um veículo e paga uma taxa fixa de R$ 10,00 por entrada
 class Estudante extends Cliente {
     constructor(cpf, nome, saldo = 0) {
         super(cpf, nome);
@@ -73,47 +66,53 @@ class Estudante extends Cliente {
 
     adicionarPlaca(placa) {
         if (this.placas.size >= 1) {
-            throw new Error("O estudante pode cadastrar apenas um veículo.");
+            throw new Error("Estudantes podem cadastrar no máximo 1 veículo.");
         }
         super.adicionarPlaca(placa);
     }
 
     carregarSaldo(valor) {
+        if (valor <= 0) throw new Error("Valor de recarga deve ser positivo.");
         this.saldo += valor;
     }
 
     calcularCobranca(horas) {
-        const INGRESSO = 10;
-        
-        if (this.saldo < INGRESSO) {
-            throw new Error(`Saldo insuficiente para o estudante ${this.nome}. Saldo atual: R$ ${this.saldo}`);
+        const TARIFA_ESTUDANTE = 10.00;
+
+        if (this.saldo < TARIFA_ESTUDANTE) {
+            throw new Error(`Saldo insuficiente (R$ ${this.saldo.toFixed(2)}). Necessário R$ ${TARIFA_ESTUDANTE.toFixed(2)}.`);
         }
 
-        this.saldo -= INGRESSO;
-        return INGRESSO;
+        this.saldo -= TARIFA_ESTUDANTE;
+        return TARIFA_ESTUDANTE;
     }
 }
 
-//classe empresa, que pode cadastrar até cinco veículos e paga uma taxa fixa de R$ 20,00 por entrada
 class Empresa extends Cliente {
     constructor(cnpj, nome) {
         super(cnpj, nome);
-        this.debito = 0;
+        this.debito = 0.00;
         this.inadimplente = false;
     }
 
     calcularCobranca(horas) {
-        const DIARIA = 20;
-        this.debito += DIARIA;
-        return DIARIA;
+        if (this.inadimplente) {
+            throw new Error(`Empresa ${this.nome} está inadimplente. Cobrança bloqueada.`);
+        }
+
+        const VALOR_DIARIA = 20.00;
+        this.debito += VALOR_DIARIA;
+        return VALOR_DIARIA;
     }
 
-    emitirBoleto() {
-        return this.debito;
+    pagarFatura(valor) {
+        this.debito -= valor;
+        if (this.debito <= 0) {
+            this.debito = 0;
+            this.inadimplente = false;
+        }
     }
 }
-
-// Exportando as classes para uso em outros módulos
 
 export {
     Cliente,

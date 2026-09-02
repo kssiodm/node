@@ -1,21 +1,25 @@
-//classe abstrata para descontos
-
+// modelo/desconto.js
 class Desconto {
-    calcular() {
+    calcular(valor) {
         throw new Error("Método abstrato.");
     }
 }
 
-//classe cliente frequente, que recebe 20% de desconto no valor da cobrança
-class ClienteFrequente extends Desconto {
+class SemDesconto extends Desconto {
     calcular(valor) {
-        return valor * 0.2;
+        return valor;
     }
 }
 
-// Exportando as classes para uso em outros módulos
+class DescontoPercentual extends Desconto {
+    constructor(porcentagem) {
+        super();
+        this.porcentagem = porcentagem; // ex: 0.20 para 20%
+    }
 
-export {
-    Desconto,
-    ClienteFrequente
-};
+    calcular(valor) {
+        return valor - (valor * this.porcentagem);
+    }
+}
+
+export { Desconto, SemDesconto, DescontoPercentual };
