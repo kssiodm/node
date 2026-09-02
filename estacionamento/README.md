@@ -20,10 +20,16 @@ O sistema foi modelado aplicando os princípios fundamentais da **Programação 
 
 ```text
 estacionamento/
+├── dados/
+│   ├── clientes.csv
+│   └── registros.csv
+│   └── estacionamento.csv
 ├── modelo/
-│   ├── cliente.js           # Definição das classes Cliente, Professor, Estudante, Empresa e Avulso
-│   └── estacionamento.js    # Definição das classes Veiculo, RegistroEstacionamento e Estacionamento
-│   └── desconto.js          # Definição das classes desconto e clienteFrequente
-├── app.js                   # Script principal com a demonstração e testes do sistema
-├── Diagrama_de_Classe.png   #imagem contendo diagrama de classes
-└── README.md                # Documentação do projeto
+│   ├── cliente.js
+│   └── estacionamento.js
+├── servicos/
+│   ├── persistencia.js
+│   └── relatorios.js
+├── interface.js
+├── app.js
+└── README.md
