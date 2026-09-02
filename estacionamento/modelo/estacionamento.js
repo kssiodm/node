@@ -1,10 +1,16 @@
+// estacionamento/modelo/estacionamento.js
+
 import { ClienteAvulso } from './cliente.js';
 
+
+// Classe para representar um veículo
 class Veiculo {
     constructor(placa) {
         this.placa = placa;
     }
 }
+
+// Classe para representar um registro de estacionamento
 
 class RegistroEstacionamento {
     constructor(placa, cliente, entrada) {
@@ -24,6 +30,8 @@ class RegistroEstacionamento {
         this.valorPago = Math.max(0, valor - desconto);
     }
 }
+
+// Classe principal do estacionamento
 
 class Estacionamento {
     constructor() {
@@ -112,6 +120,8 @@ class Estacionamento {
         return registro;
     }
 }
+
+// Exportando as classes para uso em outros módulos
 
 export {
     Veiculo,

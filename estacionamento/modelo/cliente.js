@@ -1,3 +1,5 @@
+
+//classe base para todos os tipos de clientes
 class Cliente {
     constructor(id, nome) {
         this.id = id;
@@ -22,6 +24,7 @@ class Cliente {
     }
 }
 
+// Subclasses para tipos específicos de clientes
 class ClienteAvulso extends Cliente {
     constructor(placa) {
         super(placa, "Cliente Avulso");
@@ -41,6 +44,8 @@ class ClienteAvulso extends Cliente {
     }
 }
 
+// Subclasse para Professor
+
 class Professor extends Cliente {
     constructor(cpf, nome) {
         super(cpf, nome);
@@ -58,6 +63,7 @@ class Professor extends Cliente {
     }
 }
 
+// Subclasse para Estudante
 class Estudante extends Cliente {
     constructor(cpf, nome, saldo = 0) {
         super(cpf, nome);
@@ -88,6 +94,7 @@ class Estudante extends Cliente {
     }
 }
 
+// Subclasse para Empresa
 class Empresa extends Cliente {
     constructor(cnpj, nome) {
         super(cnpj, nome);
@@ -113,6 +120,8 @@ class Empresa extends Cliente {
         }
     }
 }
+
+// Exportando as classes para uso em outros módulos
 
 export {
     Cliente,
