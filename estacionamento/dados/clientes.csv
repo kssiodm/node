@@ -5,3 +5,5 @@ id;nome;tipo;placas;saldo;debito;inadimplente
 11111111111;Prof. Ricardo;Professor;PRO1A11;0;0;false
 22222222222;Ana Silva;Estudante;EST2B22;10;0;false
 33333333000133;Tech Solutions;Empresa;EMP3C33;0;0;false
+14515451;Sergio;Professor;adsa152;0;0;false
+55555555555;Maria Teste;Estudante;TST1A11;40;0;false

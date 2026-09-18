@@ -64,35 +64,42 @@ class Estacionamento {
     }
 
     entrada(placa) {
-        // 1. Checagem de Lotação
-        if (this.veiculosAtivos.size >= this.capacidade) {
-            throw new Error("Estacionamento lotado (9.000 vagas ocupadas).");
-        }
+    if (!placa) throw new Error("Placa inválida.");
+    
+    // Normaliza a placa (remove espaços e coloca em maiúsculas)
+    const placaFormatada = placa.trim().toUpperCase();
 
-        // 2. Checagem se já está no estacionamento
-        if (this.veiculosAtivos.has(placa)) {
-            throw new Error(`Veículo ${placa} já se encontra estacionado.`);
-        }
+    // 1. Checagem de Lotação
+    if (this.veiculosAtivos.size >= this.capacidade) {
+        throw new Error("Estacionamento lotado (9.000 vagas ocupadas).");
+    }
 
-        // 3. Checagem de Veículo Bloqueado
-        if (this.veiculosBloqueados.has(placa)) {
-            throw new Error(`Acesso negado: O veículo ${placa} está na lista de bloqueados.`);
-        }
+    // 2. Checagem se o veículo já está no estacionamento (CRÍTICO)
+    if (this.veiculosAtivos.has(placaFormatada)) {
+        throw new Error(`Veículo ${placaFormatada} já se encontra estacionado no momento.`);
+    }
 
-        // 4. Identificação do Cliente
-        let cliente = this.buscarClientePorPlaca(placa);
-        if (!cliente) {
-            cliente = new ClienteAvulso(placa);
-        }
+    // 3. Checagem de Veículo Bloqueado
+    if (this.veiculosBloqueados.has(placaFormatada)) {
+        throw new Error(`Acesso negado: O veículo ${placaFormatada} está na lista de bloqueados.`);
+    }
 
-        // 5. Checagem de Inadimplência da Empresa
-        if (cliente.inadimplente) {
-            throw new Error(`Acesso negado: Cliente ${cliente.nome} possui pendências financeiras.`);
-        }
+    // 4. Identificação do Cliente
+    let cliente = this.buscarClientePorPlaca(placaFormatada);
+    if (!cliente) {
+        cliente = new ClienteAvulso(placaFormatada);
+    }
 
-        const registro = new RegistroEstacionamento(placa, cliente, new Date());
-        this.veiculosAtivos.set(placa, registro);
-        return registro;
+    // 5. Checagem de Inadimplência
+    if (cliente.inadimplente) {
+        throw new Error(`Acesso negado: Cliente ${cliente.nome} possui pendências financeiras.`);
+    }
+
+    // Cria e armazena o registro com a placa formatada
+    const registro = new RegistroEstacionamento(placaFormatada, cliente, new Date());
+    this.veiculosAtivos.set(placaFormatada, registro);
+    
+    return registro;
     }
 
     saida(placa) {

@@ -2,7 +2,6 @@ import readline from 'readline';
 import { Professor, Estudante, Empresa } from './modelo/cliente.js';
 import { GeradorRelatorios } from './servicos/relatorios.js';
 
-// Classe para gerenciar a interface com o usuário
 export class InterfaceUsuario {
     constructor(estacionamento, persistencia) {
         this.estacionamento = estacionamento;
@@ -13,7 +12,6 @@ export class InterfaceUsuario {
             output: process.stdout
         });
     }
-    // Método para iniciar a interface
 
     iniciar() {
         console.log("\n==========================================");
@@ -22,7 +20,8 @@ export class InterfaceUsuario {
         console.log("1. Cadastrar Cliente");
         console.log("2. Registrar Entrada de Veículo");
         console.log("3. Registrar Saída de Veículo");
-        console.log("4. Consultas e Relatórios Gerenciais");
+        console.log("4. Bloquear / Desbloquear Veículo");
+        console.log("5. Relatórios Gerenciais e Consultas");
         console.log("0. Salvar e Sair");
 
         this.rl.question("\nEscolha uma opção: ", (opcao) => {
@@ -30,11 +29,11 @@ export class InterfaceUsuario {
                 case '1': this.menuCadastro(); break;
                 case '2': this.menuEntrada(); break;
                 case '3': this.menuSaida(); break;
-                case '4': this.menuRelatorios(); break;
+                case '4': this.menuBloqueio(); break;
+                case '5': this.menuRelatorios(); break;
                 case '0': 
-                    this.persistencia.salvarClientes(this.estacionamento);
-                    this.persistencia.salvarRegistros(this.estacionamento);
-                    console.log("💾 Dados salvos com sucesso. Encerrando...");
+                    this.persistencia.salvarTudo(this.estacionamento);
+                    console.log("💾 Todos os dados e registros foram salvos em CSV com sucesso. Encerrando...");
                     this.rl.close();
                     break;
                 default:
@@ -44,8 +43,6 @@ export class InterfaceUsuario {
         });
     }
 
-    // Menu para cadastro de clientes
-
     menuCadastro() {
         this.rl.question("\nTipo (1-Prof, 2-Estudante, 3-Empresa): ", (tipo) => {
             this.rl.question("ID/CPF/CNPJ: ", (id) => {
@@ -54,7 +51,7 @@ export class InterfaceUsuario {
                         try {
                             let cliente;
                             if (tipo === '1') cliente = new Professor(id, nome);
-                            else if (tipo === '2') cliente = new Estudante(id, nome, 20.00); // R$ 20 inicial
+                            else if (tipo === '2') cliente = new Estudante(id, nome, 20.00);
                             else if (tipo === '3') cliente = new Empresa(id, nome);
 
                             if (cliente) {
@@ -72,8 +69,6 @@ export class InterfaceUsuario {
         });
     }
 
-    // Menu para registrar entrada de veículo
-
     menuEntrada() {
         this.rl.question("\nInforme a placa do veículo: ", (placa) => {
             try {
@@ -85,8 +80,6 @@ export class InterfaceUsuario {
             this.iniciar();
         });
     }
-    
-    // Menu para registrar saída de veículo
 
     menuSaida() {
         this.rl.question("\nInforme a placa do veículo: ", (placa) => {
@@ -100,29 +93,80 @@ export class InterfaceUsuario {
         });
     }
 
-    // Menu para relatórios gerenciais
-    
+    menuBloqueio() {
+        this.rl.question("\nInforme a placa do veículo: ", (placa) => {
+            this.rl.question("Ação (1-Bloquear, 2-Desbloquear): ", (acao) => {
+                if (acao === '1') {
+                    this.estacionamento.bloquearVeiculo(placa);
+                    console.log(`🚫 Placa ${placa} bloqueada com sucesso.`);
+                } else if (acao === '2') {
+                    this.estacionamento.desbloquearVeiculo(placa);
+                    console.log(`✅ Placa ${placa} desbloqueada com sucesso.`);
+                }
+                this.iniciar();
+            });
+        });
+    }
+
     menuRelatorios() {
-        console.log("\n--- RELATÓRIOS GERENCIAIS ---");
-        console.log("1. Arrecadação por Categoria");
-        console.log("2. Situação de um Cliente");
-        console.log("3. Relação de Clientes Impedidos");
-        console.log("4. Top 10 Clientes Frequentes do Ano");
-        console.log("0. Voltar");
+        console.log("\n==========================================");
+        console.log("       RELATÓRIOS GERENCIAIS (6/6)");
+        console.log("==========================================");
+        console.log("1. Arrecadação por Categoria de Cliente");
+        console.log("2. Consultar Situação de Cliente Cadastrado");
+        console.log("3. Registros de Cliente Cadastrado por Período");
+        console.log("4. Registros de Clientes Avulsos por Período");
+        console.log("5. Relação de Clientes e Veículos Impedidos");
+        console.log("6. Top 10 Clientes Mais Frequentes do Ano");
+        console.log("0. Voltar ao Menu Principal");
 
-        this.rl.question("Escolha o relatório: ", (op) => {
-            if (op === '1') this.relatorios.arrecadacaoPorCategoria();
-            else if (op === '2') {
-                this.rl.question("Informe o ID/CPF do cliente: ", (id) => {
-                    this.relatorios.situacaoCliente(id);
+        this.rl.question("\nEscolha a opção desejada: ", (op) => {
+            switch (op.trim()) {
+                case '1':
+                    this.relatorios.arrecadacaoPorCategoria();
                     this.iniciar();
-                });
-                return;
+                    break;
+                case '2':
+                    this.rl.question("Informe o ID/CPF/CNPJ do cliente: ", (id) => {
+                        this.relatorios.situacaoCliente(id);
+                        this.iniciar();
+                    });
+                    break;
+                case '3':
+                    this.rl.question("ID/CPF do cliente: ", (id) => {
+                        this.rl.question("Data Inicial (AAAA-MM-DD): ", (dtIni) => {
+                            this.rl.question("Data Final (AAAA-MM-DD): ", (dtFim) => {
+                                this.relatorios.registrosClienteCadastrado(id, dtIni, dtFim);
+                                this.iniciar();
+                            });
+                        });
+                    });
+                    break;
+                case '4':
+                    this.rl.question("Data Inicial (AAAA-MM-DD): ", (dtIni) => {
+                        this.rl.question("Data Final (AAAA-MM-DD): ", (dtFim) => {
+                            this.relatorios.registrosClientesAvulsos(dtIni, dtFim);
+                            this.iniciar();
+                        });
+                    });
+                    break;
+                case '5':
+                    this.relatorios.clientesImpedidos();
+                    this.iniciar();
+                    break;
+                case '6':
+                    this.rl.question("Informe o Ano (ex: 2026): ", (ano) => {
+                        this.relatorios.top10ClientesMaisFrequentes(parseInt(ano) || new Date().getFullYear());
+                        this.iniciar();
+                    });
+                    break;
+                case '0':
+                    this.iniciar();
+                    break;
+                default:
+                    console.log("❌ Opção inválida.");
+                    this.iniciar();
             }
-            else if (op === '3') this.relatorios.clientesImpedidos();
-            else if (op === '4') this.relatorios.top10ClientesMaisFrequentes(new Date().getFullYear());
-
-            this.iniciar();
         });
     }
 }

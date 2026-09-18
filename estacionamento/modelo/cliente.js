@@ -16,7 +16,9 @@ class Cliente {
     }
 
     possuiPlaca(placa) {
-        return this.placas.has(placa);
+    if (!placa) return false;
+    const placaLimpa = placa.trim().toUpperCase();
+    return Array.from(this.placas).some(p => p.trim().toUpperCase() === placaLimpa);
     }
 
     calcularCobranca(horas) {

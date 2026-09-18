@@ -1,4 +1,5 @@
 dados/clientes.csv
 dados/estacionamentos.csv
 dados/registros.csv
+dados/bloqueados.csv
 *.csv
